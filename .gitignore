@@ -7,8 +7,9 @@
 ehthumbs.db
 Thumbs.db
 
-# Reference Repository
+# Reference Repository & Agents
 reference_repo/
+.agents/
 
 # Editor & IDEs
 .idea/

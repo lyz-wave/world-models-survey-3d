@@ -16,93 +16,90 @@
 
 > 🌟 **在线交互体验直达（GitHub Pages）**：👉 **[https://lyz-wave.github.io/world-models-survey-3d/](https://lyz-wave.github.io/world-models-survey-3d/)** 👈
 >
-> *(免配置任何本地环境，任何现代浏览器点击即可直达 3D 空间架构交互平台：体验 LeCun H-JEPA vs 李飞飞 Atlas 双架构联动、机械开箱滑轨抽取、12 大内部原理 Live 展开、60 秒导览剧情与物理对抗实验场！)*
+> *(免配置任何本地环境，任何现代浏览器点击即可直达 3D 空间架构交互平台：体验 LeCun H-JEPA vs 李飞飞 Atlas 双架构联动、机械开箱滑轨抽取、12 大内部机理 Live 展开、60 秒导览剧情与物理对抗实验场！)*
 
 ---
 
-## 一、 知识库架构与成果导航
+## 📖 项目简介
+
+本项目针对人工智能核心前沿方向——**世界模型（World Models）**，提供了系统性的学术文献调研报告库与可交互的 **3D WebGL 双架构对比平台**：
+
+1. **宏观哲学与微观解剖**：深入剖析 Yann LeCun **H-JEPA**（潜空间自监督因果表征）与李飞飞 **World Labs Atlas**（显式 3D 高斯空间智能）的技术分野；
+2. **沉浸式 3D 可视化**：首创机械开箱抽取机制与 12 大计算动力学实时展开；
+3. **物理幻觉对抗实验**：通过遮挡持久性与刚体碰撞穿模两项基准测试，直观对比传统 2D 视频生成（Sora/Runway）的物理幻觉与 3D 世界模型的物理守恒规律。
+
+---
+
+## 📂 仓库结构
 
 ```text
-世界模型调研/
-├── world-models-3d/                         # [旗舰交互] 3D WebGL 前沿架构双屏深度对比与物理对抗实验场
-│   ├── index.html                           # 3D 交互主入口 (LeCun H-JEPA vs 李飞飞 Atlas)
+world-models-survey-3d/
+├── docs/                                    # 📚 学术调研与技术全景报告库 (01 - 05)
+│   ├── 01_世界模型技术全景与演进脉络.md             # [宏观全景] POMDP 数学定义、四大核心流派与技术矩阵
+│   ├── 02_核心里程碑论文三维对比剖析(3-Way-Scan).md # [微观解剖] 14 篇里程碑论文 WHY/HOW/WHAT 深度剖析
+│   ├── 03_核心技术挑战与评估基准.md                 # [前沿瓶颈] 复合误差扩散、目标错配、权威 Benchmark 评估体系
+│   ├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [前沿重磅] 空间上下文、3DGS 欧氏坐标锚定与 6-DoF 控制
+│   └── 05_智能结构与空间智能巡检可执行科研Pipeline.md   # [科研实操] 单卡 RTX 3090 可复现的顶刊科研全流程方案
+├── world-models-3d/                         # 🌟 3D WebGL 架构对比与物理对抗实验平台 (Three.js)
+│   ├── index.html                           # 3D 平台主入口 (LeCun H-JEPA vs 李飞飞 Atlas)
 │   ├── app.js                               # 3D 渲染核心、开箱抽取动效、物理对抗仿真
 │   ├── module-principles.js                 # 12 大核心模块内部运作机理详细数据
 │   └── style.css                            # 科技感深色 UI 与控制台样式
-├── trajectory_architecture_interactive.html # [2D 交互] 交互式世界模型架构推演与时间线图
-├── .agents/skills/academic-deep-research/   # [内置技能] 学术深度调研与论文对比 Skill 套件
-│   ├── SKILL.md                             # 技能定义与触发指令
-│   └── references/
-│       ├── three_way_scan_template.md       # 论文 WHY/HOW/WHAT 结构化剖析模板
-│       └── lit_review_protocol.md           # 严谨文献检索与防幻觉审核规范
-│
-├── docs/                                    # [学术报告] 深度调研与技术全景文档库
-│   ├── 01_世界模型技术全景与演进脉络.md             # [宏观全景] 数学形式化定义、四大流派、演进路线与横向技术矩阵
-│   ├── 02_核心里程碑论文三维对比剖析(3-Way-Scan).md # [微观解剖] 14 篇里程碑论文 WHY/HOW/WHAT 深度剖析
-│   ├── 03_核心技术挑战与评估基准.md                 # [前沿瓶颈] 复合误差、目标错配、权威 Benchmark 与未来破局点
-│   ├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [前沿重磅] 2024-2026 最新突破、李飞飞 World Labs Atlas 深度解剖
-│   └── 05_智能结构与空间智能巡检可执行科研Pipeline.md   # [落地实操] 单卡 RTX 3090 可执行的顶刊科研全流程 Pipeline
-└── README.md
+├── index.html                               # 根目录快速跳转中继 (GitHub Pages)
+└── README.md                                # 项目文档 (中文)
 ```
 
 ---
 
-## 🚀 快速启动 3D 双架构交互对比实验场
+## 🚀 快速开始
 
-本项目包含高精度、纯前端（基于 Three.js）的世界模型 3D 双架构交互对比平台：
+### 1. 在线体验（推荐）
+直接访问 GitHub Pages 在线体验：
+👉 **[https://lyz-wave.github.io/world-models-survey-3d/](https://lyz-wave.github.io/world-models-survey-3d/)**
+
+### 2. 本地运行
+无需安装复杂依赖，仅需本地 HTTP 服务器：
 
 ```bash
-# 启动本地 Web 服务器
+# 启动本地服务
 python3 -m http.server 8080 --directory world-models-3d
 
 # 浏览器访问
 open http://localhost:8080
 ```
 
-### 核心 3D 交互亮点：
-1. **双架构同屏联动对比**：左侧 Yann LeCun **AMI / H-JEPA**（潜空间自监督） vs 右侧 李飞飞 **World Labs Atlas**（显式 3DGS 空间智能）；
-2. **机械开箱抽取机制**：点击任意模块，舱门下翻 95°、激光导轨延伸、内部计算构件向前抽出展开；
-3. **12 大内部机理动态展开**：梯度下山能量小球、1200+ 高斯椭球辐射场自旋、Rectified Flow 速度矢量风洞去噪等；
-4. **60 秒导览剧情模式**：六大章节伴随运镜与机箱开合全自动同频推演讲解；
-5. **物理幻觉对抗实验场 (Benchmark Arena)**：亲手对比传统 2D 视频生成（遮挡丢失、刚体穿模虚空）与 3D 世界模型（因果不变性、SDF 刚体弹性反弹冲击波）的物理仿真。
+---
+
+## 🌟 核心 3D 交互亮点
+
+1. **双架构同屏联动对比**：左侧 Yann LeCun **AMI / H-JEPA**（金黄主题 · 潜空间自监督） vs 右侧 李飞飞 **World Labs Atlas**（青绿主题 · 显式 3DGS 空间智能）；
+2. **机械开箱抽取机制**：点击任意模块，舱门下翻 95°、双激光导轨延伸、内部计算构件向前滑出 $+2.2$ 单位至最佳视距；对侧模块与卡片智能避让；
+3. **12 大计算机理 Live 展开**：
+   * 能量曲面梯度下山小球实时搜寻最优解；
+   * 1200+ 3DGS 椭球辐射云团深度着色与自旋微颤；
+   * Rectified Flow 18 条直线速度矢量风洞极速去噪；
+   * 10Hz / 1Hz 分层时钟环双平面立体自转；
+   * 规划决策多分支心智探索树展开；
+   * 60fps 实时刚体物理碰撞与可微渲染视锥。
+4. **60 秒导览剧情模式**：六大章节伴随全自动运镜、机箱开合与字幕同频推演；
+5. **物理幻觉对抗实验场 (Benchmark Arena)**：
+   * **① 遮挡持久性测试 (Object Permanence)**：2D 视频生成在遮挡后特征崩溃、出墙即永久消失 (**Object Lost 🔴**)；3D 世界模型隐空间因果追踪 / 3DGS 欧氏坐标锚定保持守恒 (**Preserved 🟢**)；
+   * **② 刚体碰撞穿模测试 (Collision & Penetration)**：2D 视频生成缺乏接触法线与不可穿透性，小球如幽灵般垂直穿透坚硬底板坠入虚空 (**Collision Failed 🔴**)；3D 世界模型基于 SDF 与恢复系数 ($e=0.72$) 弹性反弹，激发出绿色能量冲击波 (**Conserved 🟢**)。
 
 ---
 
-## 二、 核心成果概览
+## 📚 学术调研报告导航 (`docs/`)
 
-### 1. [05_智能结构与空间智能巡检可执行科研Pipeline.md](./docs/05_智能结构与空间智能巡检可执行科研Pipeline.md) 🚀 **科研实操执行方案**
-- **适配专业**：智能结构与智能工程（Smart Structures and Intelligent Engineering）
-- **计算条件**：单张 NVIDIA GeForce RTX 3090（24GB VRAM）完全兼容
-- **数据来源**：100% 公开无人机航拍与基础设施病害基准（Mill 19, UrbanScene3D, CODEBRIM），零硬件实购成本
-- **核心模块**：
-  - 选题定位与学术故事线（稀疏航拍视角空间补全 + 3D 物理损伤场联合建模）
-  - 环境配置全指令（PyTorch + gsplat + GLOMAP/COLMAP）
-  - 数据处理脚本与位姿解算代码
-  - 损失函数数学形式化定义与 10-12 周科研里程碑
-  - 目标投递期刊（*Automation in Construction* / *CAutoIE*）论文结构与图表规划
+| 报告文档 | 核心内容 | 重点涵盖 |
+| :--- | :--- | :--- |
+| **[01_技术全景与演进脉络](./docs/01_世界模型技术全景与演进脉络.md)** | 形式化数学定义与四大技术流派 | POMDP 框架、RSSM (DreamerV1-V3)、JEPA 认知架构、视频扩散模拟器 (Genie/OASIS)、4D 自动驾驶占用网格 |
+| **[02_核心里程碑论文三维对比](./docs/02_核心里程碑论文三维对比剖析(3-Way-Scan).md)** | 14 篇里程碑文献深度解剖 | 采用统一 **WHY (科学痛点) / HOW (数学与实现) / WHAT (实证与局限)** 范式严格对比剖析 |
+| **[03_核心技术挑战与评估基准](./docs/03_核心技术挑战与评估基准.md)** | 四大本质瓶颈与评测体系 | 自回归复合误差扩散、目标错配、潜动作解耦难题、3D 物理一致性违背率 (PVR) 与基准评测集 |
+| **[04_Atlas世界模型深度解剖](./docs/04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md)** | 空间智能与最新前沿突破 | 李飞飞 World Labs Atlas 深度解密：空间上下文 (Spatial Context)、6-DoF 精准控制、3DGS 导出与 R2S2R 闭环 |
+| **[05_智能结构可执行科研Pipeline](./docs/05_智能结构与空间智能巡检可执行科研Pipeline.md)** | 单卡消费级 RTX 3090 可复现实操 | 稀疏无人机航拍空间补全 + 3D 物理损伤场建模，完整包含数据清洗、损失函数定义与顶刊投递规划 |
 
-### 2. [04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md](./docs/04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md) 🔥 **最新前沿聚焦**
-- **李飞飞 World Labs 旗舰模型 Atlas (2026.09 最新发布)**：
-  - **核心架构**：多模态自回归扩散变换器（Multimodal Autoregressive Diffusion Transformer，流匹配 Rectified Flow）。
-  - **颠覆性创新**：提出**“空间上下文（Spatial Context）”**，将图像与视频显式接地（Grounding）在 3D 欧几里得坐标中，彻底解决纯 2D 视频生成缺乏三维持久性与物理一致性的本质瓶颈。
-  - **四大杀手级能力**：像素级 6-DoF 相机精准受控生成（1440p / 1 分钟）、稀疏视角极速 3D 重建并导出 3D Gaussian Splats（3DGS）、时空物理仿真与 Real-to-Sim-to-Real（R2S2R）具身机器人仿真闭环、“子弹时间”多视角重构。
-  - **基准表现**：在复杂相机运镜胜率上超主流模型 75%-94%；在 DTU/ETH3D/ScanNet 7 大基准的三维重建误差（AbsRel）上以 25.3 击败专门的 3D 重建模型。
-- **近两年核心赛道突破**：
-  - **3D 空间世界模型**：HunyuanWorld 1.0, ABot-World-0, GaussianWorld
-  - **实时端到端交互游戏世界**：Google GameNGen (DOOM 20fps), Decart Oasis (Minecraft 20fps), Matrix-Game 3.0
-  - **自动驾驶闭环**：Wayve GAIA-2, NVIDIA Cosmos-Drive-Dreams / OmniDreams, Doe-1
+---
 
-### 3. [01_世界模型技术全景与演进脉络.md](./docs/01_世界模型技术全景与演进脉络.md)
-- **数学本质**：基于 POMDP 的紧凑信念状态表征、状态动力学转移与反事实推演。
-- **四大核心技术流派**：
-  1. **潜空间强化学习动力学 (RSSM / Model-Based RL)**：Ha & Schmidhuber (2018), PlaNet, DreamerV1-V3, DayDreamer, Iris
-  2. **联合嵌入预测架构 (JEPA)**：LeCun 认知框架, I-JEPA, V-JEPA, V-JEPA 2.0（特征级因果预测 vs 像素级生成）
-  3. **视频扩散与交互世界模拟器 (Generative World Simulators)**：Genie (DeepMind 11B), GAIA-1/2 (Wayve), UniSim (Google), OASIS (Decart)
-  4. **具身智能与自动驾驶 4D 模型 (Embodied & Autonomous Driving)**：OccWorld, Drive-WM, 3D 占用栅格动力学
+## 📄 开源许可
 
-### 4. [02_核心里程碑论文三维对比剖析(3-Way-Scan).md](./docs/02_核心里程碑论文三维对比剖析(3-Way-Scan).md)
-按 **WHY（科学痛点）/ HOW（数学与架构实现）/ WHAT（实证表现与局限性）** 统一标准，逐一深度解剖 14 篇经典与前沿文献。
-
-### 5. [03_核心技术挑战与评估基准.md](./docs/03_核心技术挑战与评估基准.md)
-- **四大本质瓶颈**：自回归复合误差扩散、目标错配（高频背景噪声吃掉显存）、潜动作因果解耦难题、3D 空间持久性与物理定律违背。
-- **评测基准体系**：决策控制类（Atari 100k, DMC, Crafter, MineDojo）、时空视频一致性（FVD, 动作一致性误差 ACE, 物理违背率 PVR）、自动驾驶（nuScenes 4D Occupancy, 闭环碰撞率）。
+本项目采用 [MIT License](LICENSE) 开源，学术调研报告与 3D 代码均可自由用于学习、教学与学术研究。

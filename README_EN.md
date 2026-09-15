@@ -8,7 +8,6 @@
     <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github" alt="GitHub Repo">
   </a>
   <img src="https://img.shields.io/badge/Three.js-WebGL_3D-black?style=for-the-badge&logo=three.js" alt="Three.js">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
 </p>
 
 <p align="center">
@@ -23,12 +22,11 @@
 
 ## 📖 Overview
 
-This repository presents a systematic, industry-grade academic survey and an interactive 3D WebGL knowledge platform focused on one of the most critical frontiers in artificial intelligence: **World Models**.
+This repository provides a systematic academic literature survey and an interactive **3D WebGL comparative knowledge platform** exploring the frontier of **World Models**:
 
-It synthesizes state-of-the-art developments across:
-1. **Latent Invariance & Self-Supervised World Models**: Yann LeCun's Autonomous Machine Intelligence (AMI) and Hierarchical Joint Embedding Predictive Architecture (**H-JEPA**);
-2. **Explicit 3D Geometry & Spatial Intelligence**: Fei-Fei Li's World Labs flagship architecture (**Atlas**, Sep 2026);
-3. **Generative World Simulators & 4D Embodied Dynamics**: DreamerV3, Genie, OASIS, GAIA-2, Cosmos, and Sora/Runway paradigms.
+1. **Paradigmatic Divide**: Rigorous comparison between Yann LeCun's **H-JEPA** (latent self-supervised causal representations) and Fei-Fei Li's **World Labs Atlas** (explicit 3D Gaussian spatial intelligence);
+2. **Interactive 3D Engine**: Novel mechanical unboxing animations revealing 12 live computational dynamical pipelines;
+3. **Physics Hallucination Benchmark Arena**: Interactive side-by-side simulations contrasting traditional 2D video generation hallucinations (Sora/Runway) against 3D World Model physical invariance.
 
 ---
 
@@ -36,22 +34,17 @@ It synthesizes state-of-the-art developments across:
 
 ```text
 world-models-survey-3d/
-├── docs/                                    # 📚 Academic Literature Survey & Technical Reports
-│   ├── 01_世界模型技术全景与演进脉络.md             # [Macro Landscape] Mathematical formulation (POMDP), 4 paradigms, taxonomy
+├── docs/                                    # 📚 Academic Survey & Research Reports (01 - 05)
+│   ├── 01_世界模型技术全景与演进脉络.md             # [Macro Landscape] POMDP formulation, 4 paradigms, taxonomy
 │   ├── 02_核心里程碑论文三维对比剖析(3-Way-Scan).md # [Micro Analysis] 14 milestone papers evaluated via WHY/HOW/WHAT
-│   ├── 03_核心技术挑战与评估基准.md                 # [Bottlenecks] Compounding errors, objective mismatch, benchmarks & metrics
-│   ├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [Frontier] 2024-2026 breakthroughs, Fei-Fei Li Atlas deep dive
+│   ├── 03_核心技术挑战与评估基准.md                 # [Bottlenecks] Compounding errors, objective mismatch, benchmarks
+│   ├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [Frontier] Spatial Context, 3DGS Euclidean grounding, 6-DoF control
 │   └── 05_智能结构与空间智能巡检可执行科研Pipeline.md   # [Actionable Pipeline] Complete top-tier paper pipeline for single RTX 3090
-│
-├── world-models-3d/                         # 🌟 [Flagship WebGL] Interactive 3D Comparison & Physics Arena
+├── world-models-3d/                         # 🌟 3D WebGL Comparative Platform (Three.js)
 │   ├── index.html                           # Main 3D application entry point
 │   ├── app.js                               # Three.js rendering engine, unboxing animations, physics simulation
 │   ├── module-principles.js                 # In-depth algorithmic principles for all 12 core modules
-│   └── style.css                            # Sci-Fi dark theme UI and interactive telemetry styling
-│
-├── trajectory_architecture_interactive.html # [2D Interactive] Interactive architecture evolution & timeline diagram
-├── .agents/skills/academic-deep-research/   # [Embedded Agent Skills] Deep research & literature review protocols
-├── .nojekyll                                # Direct static asset serving on GitHub Pages
+│   └── style.css                            # Sci-Fi dark theme UI & telemetry styling
 ├── index.html                               # Root gateway redirecting to world-models-3d/
 └── README.md                                # Project documentation (Chinese)
 ```
@@ -60,19 +53,15 @@ world-models-survey-3d/
 
 ## 🚀 Quick Start
 
-### 1. Online Interactive Demo
+### 1. Online Interactive Demo (Recommended)
 Visit the live GitHub Pages deployment directly in your browser:
 👉 **[https://lyz-wave.github.io/world-models-survey-3d/](https://lyz-wave.github.io/world-models-survey-3d/)**
 
 ### 2. Local Setup
-Run a local static server using Python 3:
+No complex dependencies needed, just launch any local HTTP server:
 
 ```bash
-# Clone the repository
-git clone https://github.com/lyz-wave/world-models-survey-3d.git
-cd world-models-survey-3d
-
-# Launch local HTTP server
+# Launch local static server
 python3 -m http.server 8080 --directory world-models-3d
 
 # Open in browser
@@ -81,81 +70,38 @@ open http://localhost:8080
 
 ---
 
-## 🌟 Flagship 3D WebGL Platform Features
+## 🌟 Key 3D Interactive Highlights
 
-The 3D interactive comparison platform is built with vanilla Three.js (no heavy external framework dependencies), offering smooth 60fps rendering:
-
-### 1. Dual-Architecture Synchronized Comparison
-* **Left Viewport (Amber / Gold Theme)**: **Yann LeCun: AMI / H-JEPA** (Meta FAIR / NYU) — Non-generative, abstract latent space, hierarchical temporal pulsing (10Hz/1Hz), and energy gradient descent.
-* **Right Viewport (Cyan / Emerald Theme)**: **Fei-Fei Li Team: World Labs Atlas** (Stanford) — Explicit 3D Gaussian Splatting (3DGS), Rectified Flow velocity field matching, and spatial context grounding.
-
-### 2. Mechanical Unboxing & Drawer Extension Animations
-* Clicking any module opens its front hatch by **95° downward**, projects dual laser telescoping rails forward, and glides the computational internal tray **+2.2 units into the foreground**.
-* Simultaneous background dimming isolates focus onto the inspected component without cluttering the screen.
-* Clicking the right-hand modules automatically docks detailed explanation telemetry cards on the opposite side to eliminate visual occlusion.
-
-### 3. 12 Live Computational Dynamic Visualizations
-* **Gradient Descent Energy Orb**: Simulates real-time optimization over a high-dimensional Critic energy surface $E(s, a)$.
-* **3DGS Radiance Swarm**: An active cluster of 1,200+ 3D Gaussian ellipsoids dynamically spinning and pulsing with depth-aware rendering.
-* **Rectified Flow Velocity Wind Tunnel**: 18 straight-line particle vectors streaming in real-time to demonstrate optimal transport denoising.
-* **Hierarchical Working Memory Ring**: Dual 10Hz/1Hz orbital rings rotating on distinct orthogonal planes.
-* **Planning Decision Tree**: Branching rollout nodes dynamically expanding prospective futures.
-* **Simulation Cockpit**: Interactive 60fps physics collision ball and differentiable rendering camera frustum.
-
-### 4. 60-Second Synchronized Guided Story Mode
-* Click **"60秒导览剧情"** to enter an automated documentary walkthrough spanning 6 conceptual chapters.
-* Camera choreography, drawer unboxing, mechanical retraction, and subtitles are all frame-synchronized to provide an effortless educational journey.
-
-### 5. 3D Physics Hallucination Benchmark Arena
-Click **"物理幻觉实验"** to summon a dedicated physics evaluation rig in the 3D viewport, comparing 2D video generation failure modes against 3D World Model physical invariance:
-* **Test 1: Object Permanence (遮挡持久性测试)**:
-  * *2D Diffusion*: Behind obstacles, tokens collapse; exiting the barrier, the object is permanently lost (**Object Lost 🔴**).
-  * *World Model*: Latent momentum trajectories penetrate occlusions (LeCun) while 3DGS coordinates stay anchored in Euclidean space (Atlas) (**Preserved 🟢**).
-* **Test 2: Rigid-Body Collision & Penetration (刚体碰撞穿模测试)**:
-  * *2D Diffusion*: Lacking non-penetration constraints, free-falling objects ghost straight through the solid floor into the void (**Collision Failed 🔴**).
-  * *World Model*: Computes surface normal contact and coefficient of restitution ($e=0.72$), triggering realistic elastic rebound with expanding green shockwave energy rings (**Conserved 🟢**).
+1. **Dual-Architecture Synchronized Comparison**:
+   * **Left (Amber / Gold)**: Yann LeCun **AMI / H-JEPA** (Meta FAIR / NYU) — Non-generative, abstract latent space, hierarchical temporal pulsing (10Hz/1Hz), and energy gradient descent.
+   * **Right (Cyan / Emerald)**: Fei-Fei Li **World Labs Atlas** (Stanford) — Explicit 3D Gaussian Splatting (3DGS), Rectified Flow velocity matching, and spatial context grounding.
+2. **Mechanical Unboxing & Drawer Extension**: Clicking any module opens its front hatch by **95° downward**, projects dual laser telescoping rails forward, and glides the computational internal tray **+2.2 units into the foreground**;
+3. **12 Live Computational Dynamic Visualizations**:
+   * Energy surface gradient descent orb finding optimal actions;
+   * 1,200+ 3DGS radiance ellipsoids spinning and depth-pulsing;
+   * Rectified Flow 18 straight velocity vectors streaming in a wind tunnel;
+   * Hierarchical working memory dual-ring orthogonal orbital spinning;
+   * Branching planning tree dynamically exploring counterfactual futures;
+   * 60fps real-time rigid-body collision and differentiable rendering frustum.
+4. **60-Second Guided Story Tour**: Frame-synchronized camera choreography and mechanical unboxing across 6 conceptual chapters;
+5. **3D Physics Hallucination Benchmark Arena**:
+   * **Test 1: Object Permanence**: 2D video generation collapses behind occlusions and permanently vanishes (**Object Lost 🔴**); 3D World Models maintain latent causal momentum (LeCun) and explicit Euclidean 3DGS coordinates (Atlas) (**Preserved 🟢**);
+   * **Test 2: Rigid-Body Collision & Penetration**: 2D video generation lacks collision normals and ghosts straight through solid floors into the void (**Collision Failed 🔴**); 3D World Models compute SDF contact and coefficient of restitution ($e=0.72$), bouncing with expanding green shockwave energy rings (**Conserved 🟢**).
 
 ---
 
-## 📚 Core Survey Papers Summary (`docs/`)
+## 📚 Academic Survey Reports (`docs/`)
 
-### 1. [01_世界模型技术全景与演进脉络.md](./docs/01_世界模型技术全景与演进脉络.md)
-* **Mathematical Foundation**: Unified POMDP formulation, compact belief state encoding, and counterfactual transition dynamics.
-* **Four Core Paradigms**:
-  1. *Model-Based RL & RSSM*: Ha & Schmidhuber (2018), PlaNet, DreamerV1-V3, DayDreamer, Iris.
-  2. *Joint Embedding Predictive Architecture (JEPA)*: LeCun AMI, I-JEPA, V-JEPA, V-JEPA 2.0.
-  3. *Generative Video & Interactive Simulators*: Genie (11B), GAIA-1/2, UniSim, OASIS.
-  4. *Embodied & Autonomous Driving 4D Models*: OccWorld, Drive-WM, 4D Occupancy Grids.
-
-### 2. [02_核心里程碑论文三维对比剖析(3-Way-Scan).md](./docs/02_核心里程碑论文三维对比剖析(3-Way-Scan).md)
-* Evaluates 14 seminal papers under a standardized **WHY (Core Scientific Pain Point) / HOW (Mathematical Formulation & Architecture) / WHAT (Empirical Findings & Limitations)** protocol.
-
-### 3. [03_核心技术挑战与评估基准.md](./docs/03_核心技术挑战与评估基准.md)
-* **Four Intrinsic Bottlenecks**: Autoregressive compounding error drift, objective mismatch (high-frequency pixel noise drowning latent dynamics), latent action causal entanglement, and 3D physical consistency violations.
-* **Benchmark Protocols**: Decision & control (Atari 100k, DMC, MineDojo), video spatio-temporal consistency (FVD, Action Consistency Error ACE, Physical Violation Rate PVR), and autonomous driving closed-loop safety.
-
-### 4. [04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md](./docs/04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md)
-* **World Labs Atlas Deep Dive (Sep 2026)**:
-  * *Architecture*: Multimodal Autoregressive Diffusion Transformer with Rectified Flow.
-  * *Core Breakthrough*: **Spatial Context** — explicit 3D Euclidean coordinate grounding that resolves the lack of 3D permanence in 2D video generation.
-  * *Capabilities*: Controllable 6-DoF 1440p camera generation, single-image 3DGS export, Real-to-Sim-to-Real (R2S2R) robotics simulation, and bullet-time novel view synthesis.
-
-### 5. [05_智能结构与空间智能巡检可执行科研Pipeline.md](./docs/05_智能结构与空间智能巡检可执行科研Pipeline.md)
-* **End-to-End Actionable Pipeline**: Tailored for Smart Structures and Civil Infrastructure Inspection.
-* **Hardware Accessible**: 100% executable on a single consumer NVIDIA RTX 3090 (24GB VRAM).
-* **Open Datasets**: Mill 19, UrbanScene3D, and CODEBRIM with zero hardware acquisition cost.
-* **Deliverables**: GLOMAP/gsplat execution commands, loss function mathematical specs, and an 8-week publication roadmap targeted at *Automation in Construction* or *CAutoIE*.
-
----
-
-## 🛠️ Methodological Framework
-
-The research repository incorporates standards from:
-* **Stanford STORM**: Synthesizing multi-perspective inquiry with verifiable citations.
-* **academic-deep-research**: Automated 3-Way Scan paper evaluation suite located at [`.agents/skills/academic-deep-research/`](./.agents/skills/academic-deep-research/SKILL.md).
+| Document | Core Focus | Key Topics |
+| :--- | :--- | :--- |
+| **[01_Landscape & Evolution](./docs/01_世界模型技术全景与演进脉络.md)** | Mathematical formulation & 4 paradigms | POMDP framework, RSSM (DreamerV1-V3), JEPA cognitive architecture, video diffusion simulators (Genie/OASIS), 4D occupancy grids |
+| **[02_3-Way Scan of 14 Papers](./docs/02_核心里程碑论文三维对比剖析(3-Way-Scan).md)** | In-depth micro-analysis of 14 milestone papers | Evaluated via **WHY (Scientific Pain Point) / HOW (Mathematical Architecture) / WHAT (Empirical Findings & Limitations)** |
+| **[03_Challenges & Benchmarks](./docs/03_核心技术挑战与评估基准.md)** | 4 fundamental bottlenecks & metrics | Compounding error drift, objective mismatch, latent action disentanglement, Physical Violation Rate (PVR), benchmark suites |
+| **[04_Atlas Deep Dive](./docs/04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md)** | Spatial intelligence & frontier breakthroughs | World Labs Atlas deep dive: Spatial Context, 6-DoF camera control, 3DGS export, and Real-to-Sim-to-Real (R2S2R) robotics loop |
+| **[05_Actionable Research Pipeline](./docs/05_智能结构与空间智能巡检可执行科研Pipeline.md)** | Reproducible on consumer RTX 3090 | Sparse UAV spatial completion + 3D physical damage field modeling, data cleaning scripts, loss functions, and publication roadmap |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE). Academic survey materials and code are open for educational and scientific research use.
+This project is licensed under the [MIT License](LICENSE).
