@@ -22,11 +22,13 @@
 │       ├── three_way_scan_template.md       # 论文 WHY/HOW/WHAT 结构化剖析模板
 │       └── lit_review_protocol.md           # 严谨文献检索与防幻觉审核规范
 │
-├── 01_世界模型技术全景与演进脉络.md             # [宏观全景] 数学形式化定义、四大流派、演进路线与横向技术矩阵
-├── 02_核心里程碑论文三维对比剖析(3-Way-Scan).md # [微观解剖] 14 篇里程碑论文 WHY/HOW/WHAT 深度剖析
-├── 03_核心技术挑战与评估基准.md                 # [前沿瓶颈] 复合误差、目标错配、权威 Benchmark 与未来破局点
-├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [前沿重磅] 2024-2026 最新突破、李飞飞 World Labs Atlas 深度解剖
-└── 05_智能结构与空间智能巡检可执行科研Pipeline.md   # [落地实操] 单卡 RTX 3090 可执行的顶刊科研全流程 Pipeline
+├── docs/                                    # [学术报告] 深度调研与技术全景文档库
+│   ├── 01_世界模型技术全景与演进脉络.md             # [宏观全景] 数学形式化定义、四大流派、演进路线与横向技术矩阵
+│   ├── 02_核心里程碑论文三维对比剖析(3-Way-Scan).md # [微观解剖] 14 篇里程碑论文 WHY/HOW/WHAT 深度剖析
+│   ├── 03_核心技术挑战与评估基准.md                 # [前沿瓶颈] 复合误差、目标错配、权威 Benchmark 与未来破局点
+│   ├── 04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md # [前沿重磅] 2024-2026 最新突破、李飞飞 World Labs Atlas 深度解剖
+│   └── 05_智能结构与空间智能巡检可执行科研Pipeline.md   # [落地实操] 单卡 RTX 3090 可执行的顶刊科研全流程 Pipeline
+└── README.md
 ```
 
 ---
@@ -54,7 +56,7 @@ open http://localhost:8080
 
 ## 二、 核心成果概览
 
-### 1. [05_智能结构与空间智能巡检可执行科研Pipeline.md](./05_智能结构与空间智能巡检可执行科研Pipeline.md) 🚀 **科研实操执行方案**
+### 1. [05_智能结构与空间智能巡检可执行科研Pipeline.md](./docs/05_智能结构与空间智能巡检可执行科研Pipeline.md) 🚀 **科研实操执行方案**
 - **适配专业**：智能结构与智能工程（Smart Structures and Intelligent Engineering）
 - **计算条件**：单张 NVIDIA GeForce RTX 3090（24GB VRAM）完全兼容
 - **数据来源**：100% 公开无人机航拍与基础设施病害基准（Mill 19, UrbanScene3D, CODEBRIM），零硬件实购成本
@@ -65,7 +67,7 @@ open http://localhost:8080
   - 损失函数数学形式化定义与 10-12 周科研里程碑
   - 目标投递期刊（*Automation in Construction* / *CAutoIE*）论文结构与图表规划
 
-### 2. [04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md](./04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md) 🔥 **最新前沿聚焦**
+### 2. [04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md](./docs/04_近两年核心进展与李飞飞Atlas世界模型深度解剖.md) 🔥 **最新前沿聚焦**
 - **李飞飞 World Labs 旗舰模型 Atlas (2026.09 最新发布)**：
   - **核心架构**：多模态自回归扩散变换器（Multimodal Autoregressive Diffusion Transformer，流匹配 Rectified Flow）。
   - **颠覆性创新**：提出**“空间上下文（Spatial Context）”**，将图像与视频显式接地（Grounding）在 3D 欧几里得坐标中，彻底解决纯 2D 视频生成缺乏三维持久性与物理一致性的本质瓶颈。
@@ -76,7 +78,7 @@ open http://localhost:8080
   - **实时端到端交互游戏世界**：Google GameNGen (DOOM 20fps), Decart Oasis (Minecraft 20fps), Matrix-Game 3.0
   - **自动驾驶闭环**：Wayve GAIA-2, NVIDIA Cosmos-Drive-Dreams / OmniDreams, Doe-1
 
-### 3. [01_世界模型技术全景与演进脉络.md](./01_世界模型技术全景与演进脉络.md)
+### 3. [01_世界模型技术全景与演进脉络.md](./docs/01_世界模型技术全景与演进脉络.md)
 - **数学本质**：基于 POMDP 的紧凑信念状态表征、状态动力学转移与反事实推演。
 - **四大核心技术流派**：
   1. **潜空间强化学习动力学 (RSSM / Model-Based RL)**：Ha & Schmidhuber (2018), PlaNet, DreamerV1-V3, DayDreamer, Iris
@@ -84,9 +86,9 @@ open http://localhost:8080
   3. **视频扩散与交互世界模拟器 (Generative World Simulators)**：Genie (DeepMind 11B), GAIA-1/2 (Wayve), UniSim (Google), OASIS (Decart)
   4. **具身智能与自动驾驶 4D 模型 (Embodied & Autonomous Driving)**：OccWorld, Drive-WM, 3D 占用栅格动力学
 
-### 4. [02_核心里程碑论文三维对比剖析(3-Way-Scan).md](./02_核心里程碑论文三维对比剖析(3-Way-Scan).md)
+### 4. [02_核心里程碑论文三维对比剖析(3-Way-Scan).md](./docs/02_核心里程碑论文三维对比剖析(3-Way-Scan).md)
 按 **WHY（科学痛点）/ HOW（数学与架构实现）/ WHAT（实证表现与局限性）** 统一标准，逐一深度解剖 14 篇经典与前沿文献。
 
-### 5. [03_核心技术挑战与评估基准.md](./03_核心技术挑战与评估基准.md)
+### 5. [03_核心技术挑战与评估基准.md](./docs/03_核心技术挑战与评估基准.md)
 - **四大本质瓶颈**：自回归复合误差扩散、目标错配（高频背景噪声吃掉显存）、潜动作因果解耦难题、3D 空间持久性与物理定律违背。
 - **评测基准体系**：决策控制类（Atari 100k, DMC, Crafter, MineDojo）、时空视频一致性（FVD, 动作一致性误差 ACE, 物理违背率 PVR）、自动驾驶（nuScenes 4D Occupancy, 闭环碰撞率）。
