@@ -1,8 +1,18 @@
-# 世界模型（World Models）学术调研与技术全景知识库
+# 世界模型（World Models）学术调研与 3D 架构交互平台
 
-本项目为针对人工智能核心前沿方向——**世界模型（World Models）** 的系统性、工业级学术文献调研与技术图谱库。
+<p align="center">
+  <a href="https://lyz-wave.github.io/world-models-survey-3d/">
+    <img src="https://img.shields.io/badge/🌐_在线免安装_3D_Demo-立即点击体验-00f2fe?style=for-the-badge&logo=googlechrome&logoColor=black" alt="在线 3D Demo">
+  </a>
+  <a href="https://github.com/lyz-wave/world-models-survey-3d">
+    <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github" alt="GitHub Repo">
+  </a>
+  <img src="https://img.shields.io/badge/Three.js-WebGL_3D-black?style=for-the-badge&logo=three.js" alt="Three.js">
+</p>
 
-调研采用开源标准学术调研方法论（整合 GitHub 标杆项目 `Imbad0202/academic-research-skills` 与 Stanford STORM 范式），在工作区中内置了可随时调用的 Agent 调研技能套件。
+> 🌟 **在线交互体验直达（GitHub Pages）**：👉 **[https://lyz-wave.github.io/world-models-survey-3d/](https://lyz-wave.github.io/world-models-survey-3d/)** 👈
+>
+> *(免配置任何本地环境，任何现代浏览器点击即可直达 3D 空间架构交互平台：体验 LeCun H-JEPA vs 李飞飞 Atlas 双架构联动、机械开箱滑轨抽取、12 大内部原理 Live 展开、60 秒导览剧情与物理对抗实验场！)*
 
 ---
 
