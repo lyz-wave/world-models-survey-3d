@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b131e">
+  <title>Naive Cartesian vs DataFromSky Preprocessor</title>
+  <style>
+    :root {
+      --bg: #0b131e;
+      --panel: #0d1723;
+      --panel-surface: #101f2d;
+      --line: #243746;
+      --line-bright: #3b596d;
+      --text: #d6e5ee;
+      --muted: #7f99aa;
+      --highlight: #e1edf4;
+      --old: #e07a5f;
+      --old-dim: rgba(224, 122, 95, 0.18);
+      --new: #78cfc1;
+      --new-dim: rgba(120, 207, 193, 0.18);
+      --accent-blue: #64b5f6;
+      --gutter: 24px;
+      --control: 40px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* --- APP HEADER --- */
+    .app-header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--gutter);
+      border-bottom: 1px solid var(--line);
+      background: #09111b;
+      position: relative;
+      z-index: 10;
+    }
+    .app-header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: #f1f7fa;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-header h1 span {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 13px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+    .quiet-button {
+      height: 36px;
+      padding: 0 12px;
+      gap: 6px;
+      border: 1px solid var(--line);
+      background: #111e2b;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .quiet-button:hover {
+      background: #192c3d;
+      border-color: var(--line-bright);
+      color: #fff;
+    }
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      background: #111e2b;
+      color: var(--muted);
+      border-radius: 8px;
+    }
+    .icon-button:hover {
+      background: #192c3d;
+      color: var(--text);
+      border-color: var(--line-bright);
+    }
+    .story-button {
+      height: 36px;
+      padding: 0 14px;
+      gap: 8px;
+      background: #17383a;
+      border: 1px solid #2e6261;
+      color: #a8f0e5;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+    }
+    .story-button:hover {
+      background: #1e4a4c;
+      color: #ffffff;
+      border-color: var(--new);
+    }
+    .story-button #story-duration {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 99px;
+      background: rgba(120, 207, 193, 0.2);
+      color: var(--new);
+      font-weight: 500;
+    }
+    .icon {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* --- MODEL SWITCHER NAV --- */
+    main {
+      height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .models {
+      height: 68px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--line);
+      background: #0a1420;
+      position: relative;
+      z-index: 5;
+    }
+    .models button {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border-bottom: 2px solid transparent;
+      opacity: 0.6;
+      transition: all 0.2s ease;
+      background: transparent;
+    }
+    .models button:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .models button.active {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .models button[data-era="0"].active {
+      border-bottom-color: var(--old);
+    }
+    .models button[data-era="1"].active {
+      border-bottom-color: var(--new);
+    }
+    .models .year {
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .models button[data-era="0"] strong { color: #f6a892; font-size: 16px; font-weight: 600; }
+    .models button[data-era="1"] strong { color: #9be2d7; font-size: 16px; font-weight: 600; }
+    .models .count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* --- SCENE WRAPPER & CANVAS --- */
+    #scene-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #102133 0%, #08101a 80%);
+    }
+    #scene {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #scene:active {
+      cursor: grabbing;
+    }
+
+    /* Floating selection back pill (from transformer-architecture) */
+    .selection {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      height: 36px;
+      padding: 0 14px;
+      gap: 8px;
+      background: rgba(16, 31, 45, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line-bright);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 20px;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+    .selection:hover {
+      background: #1e3549;
+    }
+    .selection[hidden] {
+      display: none !important;
+    }
+
+    /* Floating canvas labels */
+    #labels-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .spatial-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      padding: 4px 9px;
+      border-radius: 6px;
+      pointer-events: auto;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      background: rgba(13, 23, 35, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--line);
+    }
+    .spatial-label:hover {
+      transform: translate(-50%, -55%);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+    .spatial-label.label-old { color: #f8b4a3; border-color: rgba(224, 122, 95, 0.4); }
+    .spatial-label.label-old:hover { border-color: var(--old); }
+    .spatial-label.label-new { color: #a5e7dd; border-color: rgba(120, 207, 193, 0.4); }
+    .spatial-label.label-new:hover { border-color: var(--new); }
+
+    /* --- EXPLORE CONTROLS (BOTTOM BAR) --- */
+    .explore-controls {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 var(--gutter);
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+      position: relative;
+      z-index: 10;
+    }
+    .explore-controls #play {
+      color: var(--new);
+      border-color: #274d4b;
+      background: #12282c;
+    }
+    .explore-controls #play:hover {
+      background: #19393e;
+      border-color: var(--new);
+    }
+    .context {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 460px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .context input[type="range"] {
+      flex: 1;
+      height: 4px;
+      background: #1c2e3f;
+      border-radius: 2px;
+      outline: none;
+      accent-color: var(--new);
+      cursor: pointer;
+    }
+    .context output {
+      min-width: 90px;
+      font-variant-numeric: tabular-nums;
+      color: #e1edf4;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .pace {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    select {
+      height: 34px;
+      min-width: 72px;
+      background: #132131;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #c7d7e3;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* --- STORY MODE OVERLAY --- */
+    .story-panel {
+      position: absolute;
+      inset: auto 0 0 0;
+      min-height: 180px;
+      background: linear-gradient(180deg, rgba(14, 27, 39, 0.94) 0%, #09131d 100%);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid #314b58;
+      padding: 20px var(--gutter) 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "copy controls" "chapters time";
+      row-gap: 16px;
+      column-gap: 32px;
+      align-items: center;
+      z-index: 30;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .story-panel[hidden] {
+      display: none !important;
+    }
+    .story-copy { grid-area: copy; min-width: 0; }
+    .story-kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #81bfb7;
+      margin-bottom: 6px;
+    }
+    .story-copy h2 {
+      font-size: 21px;
+      font-weight: 600;
+      color: #f1f7fb;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .story-copy p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #a9bece;
+      max-width: 900px;
+    }
+    .story-controls {
+      grid-area: controls;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .story-controls button {
+      border: 1px solid var(--line);
+      color: #a8bfcf;
+      background: #132433;
+    }
+    .story-controls button:hover {
+      background: #1e374d;
+      color: #fff;
+    }
+    .story-controls #story-play {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #3c656b;
+      color: #a4eee2;
+      background: #17323b;
+    }
+    .story-controls #story-play:hover {
+      background: #1e4550;
+    }
+    .story-chapters {
+      grid-area: chapters;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      min-width: 0;
+    }
+    .story-chapters button {
+      position: relative;
+      height: 24px;
+      border: 0;
+      background: transparent;
+      border-radius: 4px;
+      padding: 0;
+    }
+    .story-chapters button:before,
+    .story-chapters button:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 10px;
+      height: 3px;
+      background: #25394a;
+      border-radius: 2px;
+    }
+    .story-chapters button:after {
+      right: auto;
+      width: calc(var(--progress, 0) * 100%);
+      background: var(--new);
+    }
+    .story-chapters button[aria-current="step"]:before {
+      background: #395c69;
+    }
+    .story-chapters button:hover:before {
+      background: #507b8a;
+    }
+    .story-time {
+      grid-area: time;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      min-width: 90px;
+    }
+
+    /* STORY ACTIVE BODY STATE */
+    body.is-story .app-header,
+    body.is-story .models,
+    body.is-story .explore-controls {
+      display: none !important;
+    }
+    body.is-story main {
+      height: 100vh;
+    }
+
+    /* --- SOURCES DIALOG (NATIVE DIALOG AS IN PETERGPT) --- */
+    dialog {
+      background: #101f2d;
+      color: #d6e5ee;
+      border: 1px solid #3b596d;
+      border-radius: 14px;
+      max-width: 780px;
+      width: calc(100% - 40px);
+      padding: 24px;
+      max-height: 85vh;
+      margin: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+    }
+    .dialog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .dialog-top h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+    #source-content {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #a6bece;
+      overflow-y: auto;
+      max-height: 65vh;
+      padding-right: 8px;
+    }
+    #source-content h3 {
+      color: #e1edf4;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+    #source-content p { margin-bottom: 12px; }
+    #source-content a { color: var(--new); text-decoration: none; }
+    #source-content a:hover { text-decoration: underline; }
+    #source-content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 14px 0;
+    }
+    #source-content th, #source-content td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+    }
+    #source-content th { color: #f0f7fb; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <h1>
+      Naive Cartesian Pipeline <span>vs</span> DataFromSky Preprocessor
+    </h1>
+    <div class="header-actions">
+      <button id="home" class="quiet-button" title="Overview (Side-by-Side)">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5M8 8h8v8H8z"/></svg>
+        <span>Overview</span>
+      </button>
+      <button id="sources" class="icon-button" title="Sources & Academic References">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 2 1 3 3 0 0 1 2-1h6v15h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4zM12 5v15"/></svg>
+      </button>
+      <button id="story-toggle" class="story-button" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg>
+        <span id="story-toggle-label">Story mode</span>
+        <span id="story-duration">1 min</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Model Nav Tabs (2017 Original vs DeepSeek pattern) -->
+    <nav class="models" aria-label="Architecture Selection">
+      <button data-era="0" class="active">
+        <span class="year">Traditional Baseline</span>
+        <strong>Naive Cartesian Pipeline</strong>
+        <span class="count">4 stages · Cartesian MA + Polyline + Euler Diff</span>
+      </button>
+      <button data-era="1">
+        <span class="year">DataFromSky Project</span>
+        <strong>Werling Frenet + 1D Kalman</strong>
+        <span class="count">5 stages · C² Polynomial + Werling (1-κd) + KF + Trim</span>
+      </button>
+    </nav>
+
+    <!-- Spatial Architecture Canvas Scene -->
+    <section id="scene-wrap">
+      <canvas id="scene"></canvas>
+      <div id="labels-layer"></div>
+
+      <!-- Selection Return Pill (when zoomed inside a component) -->
+      <button id="selection" class="selection" hidden title="Return to overview">
+        <span id="selection-name">Werling Frenet Projector</span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+    </section>
+
+    <!-- Bottom Explore Bar -->
+    <footer id="explore-controls" class="explore-controls">
+      <button id="play" class="icon-button" title="Pause / Resume flow">
+        <svg class="icon" id="play-icon" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+      </button>
+      <label class="context">
+        <span>Frames / Density</span>
+        <input id="context" type="range" min="100" max="1000" step="50" value="400">
+        <output id="context-value">400 frames</output>
+      </label>
+      <label class="pace">
+        <select id="pace">
+          <option value="0.4">0.4×</option>
+          <option value="1" selected>1.0×</option>
+          <option value="2">2.0×</option>
+        </select>
+      </label>
+    </footer>
+
+    <!-- Guided Story Panel (Appears in Story Mode) -->
+    <section id="story-panel" class="story-panel" hidden>
+      <div class="story-copy">
+        <p id="story-kicker" class="story-kicker">CHAPTER 1 · RAW STREAM CHALLENGE</p>
+        <h2 id="story-title">从无序像素流到规范结构</h2>
+        <p id="story-caption">
+          无人机导出的原始数据以“一行一车”长串文本排列。传统方法直接按恒定帧率盲目切分，而 DataFromSky 项目建立了状态机，基于首帧 Y 坐标锁定车道方向并完成 10Hz 严格时间对齐。
+        </p>
+      </div>
+      <div class="story-controls">
+        <button id="story-prev" class="icon-button" title="Previous chapter">
+          <svg class="icon" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg>
+        </button>
+        <button id="story-play" class="icon-button" title="Pause story">
+          <svg class="icon" id="story-play-icon" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        </button>
+        <button id="story-next" class="icon-button" title="Next chapter">
+          <svg class="icon" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <button id="story-exit" class="icon-button" title="Exit story">
+          <svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg>
+        </button>
+      </div>
+      <nav id="story-chapters" class="story-chapters"></nav>
+      <output id="story-time" class="story-time">0:00 / 1:00</output>
+    </section>
+  </main>
+
+  <!-- Sources Modal (Exact petergpt structure) -->
+  <dialog id="source-dialog">
+    <div class="dialog-top">
+      <h2>Sources, Assumptions & Mathematical Provenance</h2>
+      <button id="close-sources" class="icon-button">
+        <svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></svg>
+      </button>
+    </div>
+    <div id="source-content">
+      <p>
+        本可视化项目严格借鉴 <strong><a href="https://github.com/petergpt/transformer-architecture" target="_blank">petergpt/transformer-architecture</a></strong> 的架构设计哲学，对 <strong><a href="https://github.com/JiaxinTrans/DataFromSky-Drone-Trajectory-Preprocessing" target="_blank">DataFromSky-Drone-Trajectory-Preprocessing</a></strong> 库与传统交通轨迹后处理算法进行空间动力学对比。
+      </p>
+
+      <h3>1. 动力学核心方程 (Werling et al., IEEE IV 2010)</h3>
+      <p>
+        在弯道 Frenet 坐标系下，车辆纵向切向位移增长率 $\dot{s}$ 并非等于线速度 $v$ 的简单投影，而是与局部曲率 $\kappa$ 及横向偏移量 $d$ 强耦合：
+      </p>
+      <table style="font-family: monospace;">
+        <tr>
+          <th>物理量</th>
+          <th>本项目采用的 Werling 封闭解</th>
+          <th>传统朴素算法近似</th>
+        </tr>
+        <tr>
+          <td>纵向速度 $\dot{s}$</td>
+          <td>$$\dot{s} = \frac{v \cos(\Delta\theta)}{1 - \kappa d}$$</td>
+          <td>$$\dot{s}_{\text{naive}} = v \cos(\Delta\theta)$$ （误差高达 10%~25%）</td>
+        </tr>
+        <tr>
+          <td>横向速度 $\dot{d}$</td>
+          <td>$$\dot{d} = v \sin(\Delta\theta)$$</td>
+          <td>$$\dot{d}_{\text{naive}} = \frac{\Delta d}{\Delta t}$$ （包含几何折角突变）</td>
+        </tr>
+        <tr>
+          <td>横向斜率 $\frac{dd}{ds}$</td>
+          <td>$$\frac{dd}{ds} = (1 - \kappa d) \tan(\Delta\theta)$$</td>
+          <td>直接对离散点做差商</td>
+        </tr>
+      </table>
+
+      <h3>2. 噪声放大比 (Differential Noise Amplification)</h3>
+      <p>
+        当无人机图像跟踪存在均方根为 $\sigma_x = 1.0\text{ px}$ 的定位高斯噪声时，在 $\Delta t = 0.1\text{s}$ 下：
+      </p>
+      <ul>
+        <li>一阶速度噪声标准差：$\sigma_v = \frac{\sqrt{2}\sigma_x}{\Delta t} \approx 14.1\text{ px/s}$ （约 $1.72\text{ m/s}$）</li>
+        <li>二阶加速度噪声标准差：$\sigma_a = \frac{\sqrt{6}\sigma_x}{\Delta t^2} \approx 245\text{ px/s}^2$ （约 $29.8\text{ m/s}^2$！远超正常车辆动力学极限）</li>
+      </ul>
+      <p>
+        本项目通过 <strong>1D 稳态卡尔曼滤波器</strong>（$R=0.001, Q=0.05$）与 <strong>首尾 4 帧差分边界剔除（Trim Frames）</strong>，将加速度扰动压制在物理合理区间（$< 4\text{ m/s}^2$）。
+      </p>
+
+      <h3>3. 参考文献引用 (Academic Citations)</h3>
+      <p>
+        1. <strong>Werling, M., Ziegler, J., Kammel, S., & Thrun, S. (2010).</strong> <em>Optimal trajectory generation for dynamic street scenarios in a Frenet frame.</em> IEEE International Conference on Robotics and Automation (ICRA).<br>
+        2. <strong>DataFromSky Aerial Platform Manual (2024).</strong> RCE Systems s.r.o. Brno, Czech Republic.<br>
+        3. <strong>Li, Jiaxin (2026).</strong> <em>DataFromSky-Drone-Trajectory-Preprocessing.</em> GitHub Repository & Zenodo.
+      </p>
+    </div>
+  </dialog>
+
+  <!-- Canvas Spatial Engine & Interactive Controller -->
+  <script>
+    // --- PIPELINE COMPONENT DEFINITIONS ---
+    const PIPELINE = {
+      // Model 0: Naive Baseline
+      naive: {
+        id: 0,
+        name: "Naive Cartesian Pipeline",
+        year: "Traditional",
+        color: "#e07a5f",
+        dimColor: "rgba(224, 122, 95, 0.18)",
+        nodes: [
+          {
+            id: "n_raw",
+            name: "Raw Step Slicing",
+            subtitle: "Fixed Interval Slicing",
+            x: -240, y: -190, w: 190, h: 56,
+            formula: "frame_idx = k * step\n(Ignores frame drops)",
+            detail: "假定帧率绝对恒定，遇到丢帧产生不可恢复的时间累积偏移。"
+          },
+          {
+            id: "n_filter",
+            name: "Cartesian MA Filter",
+            subtitle: "Moving Average on (x,y)",
+            x: -240, y: -70, w: 190, h: 56,
+            formula: "P_smooth = 1/N * Σ P_i\n(Corner cutting effect)",
+            detail: "在欧氏直角坐标平面平滑，在弯道处产生内侧切角，使车辆脱离真实车道。"
+          },
+          {
+            id: "n_proj",
+            name: "Polyline Projection",
+            subtitle: "C⁰ Discrete Normal Search",
+            x: -240, y: 50, w: 190, h: 56,
+            formula: "d = min ||P - Seg_i||\n(Normal vector jumps at vertices)",
+            detail: "折线顶点处法向量不连续，导致垂足投影距离 s 发生阶跃式突变。"
+          },
+          {
+            id: "n_diff",
+            name: "Euler Finite Diff",
+            subtitle: "Backward 2nd Difference",
+            x: -240, y: 170, w: 190, h: 56,
+            formula: "a = (v_t - v_{t-1}) / Δt\n(Noise amplified by 1/Δt²)",
+            detail: "差分二阶求导将 1px 图像噪声放大为几十 m/s² 的虚假冲击震荡。"
+          }
+        ]
+      },
+
+      // Model 1: DataFromSky Preprocessor (本项目)
+      dfs: {
+        id: 1,
+        name: "Werling Frenet + 1D Kalman",
+        year: "DataFromSky",
+        color: "#78cfc1",
+        dimColor: "rgba(120, 207, 193, 0.18)",
+        nodes: [
+          {
+            id: "d_fsm",
+            name: "FSM Packet Parser",
+            subtitle: "Regex + Spatial Y-Gate",
+            x: 240, y: -210, w: 200, h: 52,
+            formula: "is_int(col0) & type in ALLOWED\ny_min < first_y < y_max",
+            detail: "状态机合并变长文本流；通过 Y 范围锁定车道方向；严格 10Hz 容差对齐。"
+          },
+          {
+            id: "d_ref",
+            name: "C² Polynomial Refline",
+            subtitle: "Polyval + Curvature κ",
+            x: 240, y: -110, w: 200, h: 52,
+            formula: "y = P(x),  κ = y''/(1+y'²)^{1.5}\nSpatial cKDTree(ref_pts)",
+            detail: "4阶高精度连续道路线，解析计算连续曲率与梯度，KD-Tree 实现 O(log N) 匹配。"
+          },
+          {
+            id: "d_werling",
+            name: "Werling Frenet Proj",
+            subtitle: "Coupled Dynamics Mapping",
+            x: 240, y: -10, w: 200, h: 52,
+            formula: "ṡ = v·cos(Δθ) / (1 - κd)\nḋ = v·sin(Δθ),  dt/ds",
+            detail: "Werling 2010 动力学解耦，分母 (1-κd) 消除弯道内外侧速度畸变。"
+          },
+          {
+            id: "d_kalman",
+            name: "1D Kalman Bank",
+            subtitle: "State Smoother (R=1e-3, Q=0.05)",
+            x: 240, y: 90, w: 200, h: 52,
+            formula: "X_{k|k} = X_{k|k-1} + K_k(z_k - H X)\nApplies to ṡ, s̈, ḋ, d̈",
+            detail: "稳态二次卡尔曼平滑器，强力压制高频差分噪声，恢复平滑物理曲线。"
+          },
+          {
+            id: "d_trim",
+            name: "Boundary Trim & Calib",
+            subtitle: "Trim 4 Frames + PX_PER_METER",
+            x: 240, y: 190, w: 200, h: 52,
+            formula: "keep: idx ∈ [trim, N-trim]\ns_m = s_px / 8.2",
+            detail: "消除首尾单侧差分奇异点畸变；依据车道标线物理宽度标定国际米制。"
+          }
+        ]
+      }
+    };
+
+    // --- STORY CHAPTERS (1-minute guided visual tour) ---
+    const STORY_CHAPTERS = [
+      {
+        kicker: "CHAPTER 1 · RAW DRONE STREAM",
+        title: "原始航拍文本流的结构清洗",
+        caption: "无人机 DataFromSky 导出的 CSV 数据是一行一车的半结构化长文本。传统方法直接切片容易发生时间漂移，而本项目使用状态机与首帧 Y 轴空间过滤，完成 10Hz 严格时间序列重构。",
+        targetLeft: "n_raw",
+        targetRight: "d_fsm",
+        camX: 0, camY: -200, zoom: 1.15
+      },
+      {
+        kicker: "CHAPTER 2 · REFERENCE TOPOLOGY",
+        title: "道路基准线：C⁰ 折线 vs C² 连续多项式",
+        caption: "在弯道处，传统折线投影在拐点处法向量突变（C⁰ 不连续），导致垂足距离跳跃。本项目采用 4 阶解析多项式，求解连续曲率 κ(s) 与梯度 κ'(s)，并用 cKDTree 实现对数级极速匹配。",
+        targetLeft: "n_proj",
+        targetRight: "d_ref",
+        camX: 0, camY: -80, zoom: 1.2
+      },
+      {
+        kicker: "CHAPTER 3 · DYNAMICS COUPLING",
+        title: "核心机理：为什么必须引入 (1 - κd) 补偿？",
+        caption: "车辆在弯道外侧行驶时真实弧长大于中心线，内侧则小于中心线。Werling 公式 ṡ = v·cos(Δθ) / (1 - κd) 精确补偿了这一几何差异，而传统算法直接分解导致弯道速度产生高达 10%~25% 的失真。",
+        targetLeft: "n_diff",
+        targetRight: "d_werling",
+        camX: 80, camY: -10, zoom: 1.35
+      },
+      {
+        kicker: "CHAPTER 4 · NOISE SUPPRESSION",
+        title: "差分噪声爆炸与 1D 卡尔曼滤波平滑",
+        caption: "二阶数值微分是噪声放大器！1 像素定位抖动在 Δt=0.1s 下可引起近 30 m/s² 的虚假加速度尖峰。本项目构建 1D 卡尔曼滤波器对高阶状态平滑，将加速度恢复至符合物理规律的平稳曲线。",
+        targetLeft: "n_diff",
+        targetRight: "d_kalman",
+        camX: 60, camY: 130, zoom: 1.3
+      },
+      {
+        kicker: "CHAPTER 5 · EDGE BOUNDARY TRIMMING",
+        title: "边界奇异点裁剪与物理标定",
+        caption: "数值差分算子在序列头尾存在单侧差分残损。本项目通过 trim_frames 裁剪首尾各 4 帧，彻底消灭瞬态离群点，并按标线物理尺寸通过 PX_PER_METER 转换为标准国际米制单位。",
+        targetLeft: null,
+        targetRight: "d_trim",
+        camX: 240, camY: 190, zoom: 1.45
+      },
+      {
+        kicker: "CHAPTER 6 · ARCHITECTURAL LANDSCAPE",
+        title: "全景对比：工程实用性与演进权衡",
+        caption: "虽然工业界自动驾驶采用更复杂的 B 样条与 IPM 逆透视映射，但 DataFromSky 项目凭借不到 400 行优雅 Python 代码，完美解决了航拍微观交通轨迹预处理的全部核心痛点。",
+        targetLeft: null,
+        targetRight: null,
+        camX: 0, camY: 0, zoom: 0.95
+      }
+    ];
+
+    // --- APPLICATION STATE ---
+    const state = {
+      era: -1, // -1: Overview (both side by side), 0: Naive only, 1: DFS only
+      selectedNode: null, // Node currently inspected ("Look Inside")
+      isPlaying: true,
+      pace: 1.0,
+      frameCount: 400,
+      animTime: 0,
+      // Camera state
+      camX: 0,
+      camY: 0,
+      camZoom: 0.95,
+      targetCamX: 0,
+      targetCamY: 0,
+      targetCamZoom: 0.95,
+      // Drag state
+      isDragging: false,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      // Story mode state
+      isStory: false,
+      storyChapter: 0,
+      storyTime: 0, // seconds elapsed
+      storyChapterDuration: 10, // 10s per chapter = 60s total
+      isStoryPlaying: true
+    };
+
+    // --- CANVAS & LABELS SETUP ---
+    const canvas = document.getElementById("scene");
+    const ctx = canvas.getContext("2d");
+    const labelsLayer = document.getElementById("labels-layer");
+    let width = 0, height = 0, dpr = 1;
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    // Coordinate conversion: World to Screen
+    function worldToScreen(wx, wy) {
+      const sx = width / 2 + (wx - state.camX) * state.camZoom;
+      const sy = height / 2 + (wy - state.camY) * state.camZoom;
+      return [sx, sy];
+    }
+    function screenToWorld(sx, sy) {
+      const wx = (sx - width / 2) / state.camZoom + state.camX;
+      const wy = (sy - height / 2) / state.camZoom + state.camY;
+      return [wx, wy];
+    }
+
+    // --- STORY CHAPTER PROGRESS BAR CREATION ---
+    const storyChaptersNav = document.getElementById("story-chapters");
+    STORY_CHAPTERS.forEach((ch, idx) => {
+      const btn = document.createElement("button");
+      btn.title = `Chapter ${idx + 1}: ${ch.title}`;
+      btn.onclick = () => jumpToStoryChapter(idx);
+      storyChaptersNav.appendChild(btn);
+    });
+
+    function jumpToStoryChapter(idx) {
+      state.storyChapter = idx;
+      state.storyTime = idx * state.storyChapterDuration;
+      syncStoryUI();
+    }
+
+    function syncStoryUI() {
+      const ch = STORY_CHAPTERS[state.storyChapter];
+      document.getElementById("story-kicker").innerText = ch.kicker;
+      document.getElementById("story-title").innerText = ch.title;
+      document.getElementById("story-caption").innerText = ch.caption;
+
+      state.targetCamX = ch.camX;
+      state.targetCamY = ch.camY;
+      state.targetCamZoom = ch.zoom;
+
+      // Update chapter step states
+      const buttons = storyChaptersNav.querySelectorAll("button");
+      buttons.forEach((b, i) => {
+        if (i < state.storyChapter) {
+          b.style.setProperty("--progress", 1);
+          b.removeAttribute("aria-current");
+        } else if (i === state.storyChapter) {
+          b.setAttribute("aria-current", "step");
+        } else {
+          b.style.setProperty("--progress", 0);
+          b.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    // --- UI EVENT BINDINGS (PETERGPT PATTERN) ---
+    // Model Tabs
+    const modelTabs = document.querySelectorAll(".models button");
+    modelTabs.forEach(tab => {
+      tab.onclick = () => {
+        const era = parseInt(tab.dataset.era);
+        if (state.era === era) {
+          // If clicking active, revert to overview
+          state.era = -1;
+          modelTabs.forEach(t => t.classList.remove("active"));
+          state.targetCamX = 0;
+          state.targetCamY = 0;
+          state.targetCamZoom = 0.95;
+        } else {
+          state.era = era;
+          modelTabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          state.targetCamX = era === 0 ? -240 : 240;
+          state.targetCamY = 0;
+          state.targetCamZoom = 1.15;
+        }
+        state.selectedNode = null;
+        updateSelectionPill();
+      };
+    });
+
+    // Home / Overview button
+    document.getElementById("home").onclick = () => {
+      exitStoryMode();
+      state.era = -1;
+      state.selectedNode = null;
+      modelTabs.forEach(t => t.classList.remove("active"));
+      state.targetCamX = 0;
+      state.targetCamY = 0;
+      state.targetCamZoom = 0.95;
+      updateSelectionPill();
+    };
+
+    // Sources Dialog
+    const sourceDialog = document.getElementById("source-dialog");
+    document.getElementById("sources").onclick = () => sourceDialog.showModal();
+    document.getElementById("close-sources").onclick = () => sourceDialog.close();
+
+    // Story Mode Toggle
+    const storyToggle = document.getElementById("story-toggle");
+    storyToggle.onclick = () => {
+      if (state.isStory) exitStoryMode();
+      else enterStoryMode();
+    };
+    document.getElementById("story-exit").onclick = exitStoryMode;
+
+    function enterStoryMode() {
+      state.isStory = true;
+      document.body.classList.add("is-story");
+      document.getElementById("story-panel").hidden = false;
+      state.storyChapter = 0;
+      state.storyTime = 0;
+      state.isStoryPlaying = true;
+      syncStoryUI();
+    }
+    function exitStoryMode() {
+      state.isStory = false;
+      document.body.classList.remove("is-story");
+      document.getElementById("story-panel").hidden = true;
+      state.targetCamX = 0;
+      state.targetCamY = 0;
+      state.targetCamZoom = 0.95;
+    }
+
+    // Story controls
+    document.getElementById("story-prev").onclick = () => {
+      if (state.storyChapter > 0) jumpToStoryChapter(state.storyChapter - 1);
+    };
+    document.getElementById("story-next").onclick = () => {
+      if (state.storyChapter < STORY_CHAPTERS.length - 1) jumpToStoryChapter(state.storyChapter + 1);
+      else exitStoryMode();
+    };
+    document.getElementById("story-play").onclick = () => {
+      state.isStoryPlaying = !state.isStoryPlaying;
+      document.getElementById("story-play-icon").innerHTML = state.isStoryPlaying 
+        ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' 
+        : '<path d="m8 5 11 7-11 7z"/>';
+    };
+
+    // Explore bar controls
+    const playBtn = document.getElementById("play");
+    playBtn.onclick = () => {
+      state.isPlaying = !state.isPlaying;
+      document.getElementById("play-icon").innerHTML = state.isPlaying
+        ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' 
+        : '<path d="m8 5 11 7-11 7z"/>';
+    };
+
+    const contextSlider = document.getElementById("context");
+    const contextOutput = document.getElementById("context-value");
+    contextSlider.oninput = (e) => {
+      state.frameCount = parseInt(e.target.value);
+      contextOutput.innerText = `${state.frameCount} frames`;
+    };
+
+    const paceSelect = document.getElementById("pace");
+    paceSelect.onchange = (e) => {
+      state.pace = parseFloat(e.target.value);
+    };
+
+    // Selection return button (back to overview)
+    const selectionBtn = document.getElementById("selection");
+    selectionBtn.onclick = () => {
+      state.selectedNode = null;
+      updateSelectionPill();
+      state.targetCamZoom = state.era === -1 ? 0.95 : 1.15;
+      state.targetCamX = state.era === 0 ? -240 : (state.era === 1 ? 240 : 0);
+      state.targetCamY = 0;
+    };
+
+    function updateSelectionPill() {
+      if (state.selectedNode) {
+        selectionBtn.hidden = false;
+        document.getElementById("selection-name").innerText = state.selectedNode.name;
+      } else {
+        selectionBtn.hidden = true;
+      }
+    }
+
+    // --- MOUSE & GESTURE INTERACTION ---
+    canvas.onmousedown = (e) => {
+      state.isDragging = true;
+      state.lastMouseX = e.clientX;
+      state.lastMouseY = e.clientY;
+    };
+    window.onmousemove = (e) => {
+      if (state.isDragging) {
+        const dx = e.clientX - state.lastMouseX;
+        const dy = e.clientY - state.lastMouseY;
+        state.targetCamX -= dx / state.camZoom;
+        state.targetCamY -= dy / state.camZoom;
+        state.lastMouseX = e.clientX;
+        state.lastMouseY = e.clientY;
+      }
+    };
+    window.onmouseup = () => { state.isDragging = false; };
+
+    canvas.onwheel = (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.08 : 0.92;
+      state.targetCamZoom = Math.min(2.5, Math.max(0.5, state.targetCamZoom * factor));
+    };
+
+    // Node click detection (Hit Testing)
+    canvas.onclick = (e) => {
+      if (state.isDragging) return;
+      const rect = canvas.getBoundingClientRect();
+      const [wx, wy] = screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+
+      let clicked = null;
+      const allNodes = [...PIPELINE.naive.nodes, ...PIPELINE.dfs.nodes];
+      for (const n of allNodes) {
+        if (Math.abs(wx - n.x) <= n.w / 2 && Math.abs(wy - n.y) <= n.h / 2) {
+          clicked = n;
+          break;
+        }
+      }
+
+      if (clicked) {
+        state.selectedNode = clicked;
+        state.targetCamX = clicked.x;
+        state.targetCamY = clicked.y;
+        state.targetCamZoom = 1.75;
+        updateSelectionPill();
+      }
+    };
+
+    // --- RENDERING LOOP ---
+    function render() {
+      const dt = 0.016 * state.pace;
+
+      // 1. Interpolate camera (smooth LERP)
+      state.camX += (state.targetCamX - state.camX) * 0.08;
+      state.camY += (state.targetCamY - state.camY) * 0.08;
+      state.camZoom += (state.targetCamZoom - state.camZoom) * 0.08;
+
+      if (state.isPlaying) {
+        state.animTime += dt;
+      }
+
+      // 2. Story mode timer update
+      if (state.isStory && state.isStoryPlaying) {
+        state.storyTime += dt;
+        const totalStoryTime = STORY_CHAPTERS.length * state.storyChapterDuration;
+        const currentCapIdx = Math.min(
+          STORY_CHAPTERS.length - 1,
+          Math.floor(state.storyTime / state.storyChapterDuration)
+        );
+
+        if (currentCapIdx !== state.storyChapter) {
+          state.storyChapter = currentCapIdx;
+          syncStoryUI();
+        }
+
+        const chapterProgress = (state.storyTime % state.storyChapterDuration) / state.storyChapterDuration;
+        const activeBtn = storyChaptersNav.children[state.storyChapter];
+        if (activeBtn) activeBtn.style.setProperty("--progress", chapterProgress);
+
+        const curSec = Math.floor(state.storyTime);
+        document.getElementById("story-time").innerText = 
+          `0:${curSec < 10 ? '0' : ''}${curSec} / 1:00`;
+
+        if (state.storyTime >= totalStoryTime) {
+          exitStoryMode();
+        }
+      }
+
+      // 3. Clear canvas & background
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw subtle background grid
+      drawSpatialGrid();
+
+      // 4. Draw dual architecture pipelines
+      const showNaive = state.era === -1 || state.era === 0;
+      const showDFS = state.era === -1 || state.era === 1;
+
+      if (showNaive) drawPipeline(PIPELINE.naive);
+      if (showDFS) drawPipeline(PIPELINE.dfs);
+
+      // 5. If a node is zoomed into ("Look Inside"), render its internal schematic
+      if (state.selectedNode && state.camZoom > 1.35) {
+        drawNodeInterior(state.selectedNode);
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // Draw background spatial grid
+    function drawSpatialGrid() {
+      ctx.save();
+      ctx.strokeStyle = "rgba(36, 55, 70, 0.35)";
+      ctx.lineWidth = 1;
+      const gridSize = 60 * state.camZoom;
+      const offsetX = (width / 2 - state.camX * state.camZoom) % gridSize;
+      const offsetY = (height / 2 - state.camY * state.camZoom) % gridSize;
+
+      ctx.beginPath();
+      for (let x = offsetX; x < width; x += gridSize) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, height);
+      }
+      for (let y = offsetY; y < height; y += gridSize) {
+        ctx.moveTo(0, y); ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // Central divider between the two architectures
+      if (state.era === -1) {
+        const [divX] = worldToScreen(0, 0);
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(59, 89, 109, 0.45)";
+        ctx.setLineDash([6, 6]);
+        ctx.moveTo(divX, 0);
+        ctx.lineTo(divX, height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+    }
+
+    // Draw an entire pipeline (nodes + animated connecting flow)
+    function drawPipeline(pipeline) {
+      const nodes = pipeline.nodes;
+      const col = pipeline.color;
+
+      // 1. Draw connecting flow paths & particles
+      for (let i = 0; i < nodes.length - 1; i++) {
+        const n1 = nodes[i];
+        const n2 = nodes[i + 1];
+        const [s1x, s1y] = worldToScreen(n1.x, n1.y + n1.h / 2);
+        const [s2x, s2y] = worldToScreen(n2.x, n2.y - n2.h / 2);
+
+        // Path line
+        ctx.beginPath();
+        ctx.strokeStyle = pipeline.dimColor;
+        ctx.lineWidth = 4 * state.camZoom;
+        ctx.moveTo(s1x, s1y);
+        ctx.lineTo(s2x, s2y);
+        ctx.stroke();
+
+        // Data flow particles (Token / Trajectory flow as in petergpt)
+        if (state.isPlaying) {
+          const particleCount = Math.round(state.frameCount / 80);
+          for (let p = 0; p < particleCount; p++) {
+            const phase = (state.animTime * 0.5 + p / particleCount + i * 0.25) % 1;
+            const px = s1x + (s2x - s1x) * phase;
+            const py = s1y + (s2y - s1y) * phase;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 3 * state.camZoom, 0, Math.PI * 2);
+            ctx.fillStyle = col;
+            ctx.shadowColor = col;
+            ctx.shadowBlur = 8;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        }
+      }
+
+      // 2. Draw nodes (boxes)
+      for (const node of nodes) {
+        drawNode(node, pipeline);
+      }
+    }
+
+    // Draw single spatial component block
+    function drawNode(node, pipeline) {
+      const [sx, sy] = worldToScreen(node.x, node.y);
+      const sw = node.w * state.camZoom;
+      const sh = node.h * state.camZoom;
+
+      const isFocused = state.selectedNode === node;
+      const isDimmed = state.selectedNode && !isFocused && state.camZoom > 1.35;
+
+      ctx.save();
+      if (isDimmed) ctx.globalAlpha = 0.18;
+
+      // Outer glow if focused
+      if (isFocused) {
+        ctx.shadowColor = pipeline.color;
+        ctx.shadowBlur = 20;
+      }
+
+      // Card body
+      ctx.fillStyle = "#101f2d";
+      ctx.strokeStyle = isFocused ? pipeline.color : (node === state.hoveredNode ? "#527e99" : "#243746");
+      ctx.lineWidth = isFocused ? 2 : 1;
+
+      // Rounded rect
+      const rx = sx - sw / 2, ry = sy - sh / 2, r = 8 * state.camZoom;
+      ctx.beginPath();
+      ctx.roundRect(rx, ry, sw, sh, [r]);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Top color indicator bar
+      ctx.fillStyle = pipeline.color;
+      ctx.beginPath();
+      ctx.roundRect(rx, ry, sw, 3 * state.camZoom, [r, r, 0, 0]);
+      ctx.fill();
+
+      // Node text labels (scaled)
+      if (sh > 24) {
+        ctx.fillStyle = "#f0f6fa";
+        ctx.font = `600 ${Math.max(10, 13 * state.camZoom)}px -apple-system, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(node.name, sx, sy - 4 * state.camZoom);
+
+        ctx.fillStyle = varColor(pipeline.id === 0 ? "--muted" : "--new");
+        ctx.font = `400 ${Math.max(9, 10.5 * state.camZoom)}px -apple-system, sans-serif`;
+        ctx.fillText(node.subtitle, sx, sy + 12 * state.camZoom);
+      }
+
+      ctx.restore();
+    }
+
+    function varColor(cssVar) {
+      return cssVar === "--new" ? "#78cfc1" : (cssVar === "--old" ? "#e07a5f" : "#7f99aa");
+    }
+
+    // --- "LOOK INSIDE" COMPONENT INTERIOR DRAWING ---
+    // When zoomed into a component, render internal dynamic schematics!
+    function drawNodeInterior(node) {
+      const [sx, sy] = worldToScreen(node.x, node.y);
+      const boxW = 320;
+      const boxH = 140;
+
+      ctx.save();
+      // Draw backdrop panel under node
+      ctx.fillStyle = "rgba(13, 23, 35, 0.95)";
+      ctx.strokeStyle = "#38566d";
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = "rgba(0,0,0,0.6)";
+      ctx.shadowBlur = 24;
+
+      const px = sx - boxW / 2;
+      const py = sy + (node.h / 2 + 16) * state.camZoom;
+
+      ctx.beginPath();
+      ctx.roundRect(px, py, boxW, boxH, [10]);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Internal Title & Formula
+      ctx.fillStyle = "#78cfc1";
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("INTERNAL MECHANISM & DYNAMICS FORMULATION", px + 14, py + 20);
+
+      ctx.fillStyle = "#e2edf4";
+      ctx.font = "bold 13px 'SF Mono', Consolas, monospace";
+      ctx.fillText(node.formula.split('\n')[0], px + 14, py + 42);
+
+      if (node.formula.split('\n')[1]) {
+        ctx.fillStyle = "#8ba5b7";
+        ctx.font = "11px 'SF Mono', Consolas, monospace";
+        ctx.fillText(node.formula.split('\n')[1], px + 14, py + 58);
+      }
+
+      // Detailed Description
+      ctx.fillStyle = "#a8bfcf";
+      ctx.font = "11px -apple-system, sans-serif";
+      wrapText(ctx, node.detail, px + 14, py + 84, boxW - 28, 16);
+
+      // Mini dynamic visualization inside drawer
+      if (node.id === "d_werling") {
+        // Draw miniature Frenet coordinate decomposition
+        drawMiniWerlingVector(px + boxW - 55, py + 45);
+      } else if (node.id === "d_kalman") {
+        // Draw miniature noisy vs smoothed signal
+        drawMiniSignal(px + boxW - 65, py + 35, true);
+      } else if (node.id === "n_diff") {
+        // Draw exploding noise spikes
+        drawMiniSignal(px + boxW - 65, py + 35, false);
+      }
+
+      ctx.restore();
+    }
+
+    // Mini helpers for interior schematics
+    function drawMiniWerlingVector(cx, cy) {
+      ctx.save();
+      ctx.strokeStyle = "#64b5f6";
+      ctx.lineWidth = 2;
+      // Reference curve
+      ctx.beginPath();
+      ctx.arc(cx - 30, cy + 20, 35, -Math.PI * 0.4, 0);
+      ctx.stroke();
+      // Tangent vector
+      ctx.strokeStyle = "#78cfc1";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + 25, cy - 10);
+      ctx.stroke();
+      // Normal vector
+      ctx.strokeStyle = "#f43f5e";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx - 10, cy - 25);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawMiniSignal(cx, cy, isSmooth) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = isSmooth ? "#78cfc1" : "#f43f5e";
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 40; i += 2) {
+        const x = cx + i;
+        const noise = isSmooth ? Math.sin(i * 0.3 + state.animTime * 4) * 5 : (Math.random() - 0.5) * 22;
+        const y = cy + noise;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split('');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n];
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    // Start rendering loop
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>

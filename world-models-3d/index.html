@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070d14">
+  <meta name="description" content="前沿世界模型架构 3D 深度对比与交互实验：Yann LeCun H-JEPA vs 李飞飞 World Labs Atlas">
+  <title>世界模型前沿架构 3D 深度对比 | LeCun H-JEPA vs 李飞飞 Atlas</title>
+  <link rel="stylesheet" href="style.css?v=20260915_physics_lab">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/build/three.module.js",
+        "three/addons/": "./vendor/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo">3D++</div>
+      <h1>世界模型前沿架构深度对比 <span>Yann LeCun H-JEPA</span> <span class="vs">vs</span> <span>李飞飞 Atlas</span></h1>
+    </div>
+    <div class="header-actions">
+      <!-- 物理幻觉对比实验开关 -->
+      <button id="hallucination-toggle" class="experiment-button" title="点击启动/退出物理幻觉对比试验（对比 2D 生成穿模 vs 3D 空间上下文）">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <span>物理幻觉实验</span>
+      </button>
+
+      <button id="home" class="quiet-button" title="重置全局全景视角">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>全局概览</span>
+      </button>
+      <button id="sources" class="quiet-button" title="查看架构理论与文献来源">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>理论体系</span>
+      </button>
+      <button id="story-toggle" class="story-button" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span id="story-toggle-label">60秒导览剧情</span>
+        <span id="story-duration">1:15</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <nav class="models" aria-label="模型切换">
+      <button data-era="0" class="active" aria-pressed="true">
+        <div class="model-badge-row">
+          <span class="tag tag-lecun">Meta FAIR / NYU</span>
+          <span class="pulse-indicator pulse-lecun" title="H-JEPA 运行中">分层脉冲: 10Hz/1Hz</span>
+        </div>
+        <strong>Yann LeCun: AMI / H-JEPA</strong>
+        <span class="count">非生成式 · 分层抽象潜空间 · 动态能量梯度下山</span>
+      </button>
+      <button data-era="1" aria-pressed="false">
+        <div class="model-badge-row">
+          <span class="tag tag-feifei">World Labs / Stanford</span>
+          <span class="pulse-indicator pulse-feifei" title="Atlas 运行中">3DGS: 1200+ 辐射高斯</span>
+        </div>
+        <strong>李飞飞团队: Atlas (空间智能)</strong>
+        <span class="count">显式3DGS高斯云 · Rectified Flow 直线流匹配 · 空间上下文</span>
+      </button>
+    </nav>
+
+    <!-- 物理幻觉对抗实验控制台 -->
+    <aside id="hallucination-banner" class="hallucination-banner" hidden>
+      <div class="banner-title">
+        <div class="banner-title-left">
+          <span class="badge-exp">物理幻觉对抗实验场</span>
+          <span id="exp-current-title">物体遮挡持久性测试 (Object Permanence Test)</span>
+        </div>
+        <div class="exp-nav-tabs">
+          <button id="exp-tab-permanence" class="exp-tab active" title="测试物体遮挡后的 3D 几何持久性">① 遮挡持久性测试</button>
+          <button id="exp-tab-collision" class="exp-tab" title="测试重力下落与刚体碰撞反弹">② 刚体碰撞穿模测试</button>
+        </div>
+        <button id="exp-close" class="icon-button" title="退出物理实验">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- 核心对照切换：传统 2D 视频生成 (幻觉) vs 3D 世界模型 (守恒) -->
+      <div class="exp-paradigm-bar">
+        <span class="exp-label">选择测试生成机制：</span>
+        <div class="exp-toggle-group">
+          <button id="btn-paradigm-2d" class="btn-paradigm" title="观察 2D 模型缺乏 3D 几何约束导致的物理幻觉">
+            <span class="dot dot-warn"></span>
+            <strong>传统 2D 视频生成</strong>（无 3D 几何约束 · 产生物理幻觉）
+          </button>
+          <button id="btn-paradigm-wm" class="btn-paradigm active" title="观察世界模型如何依靠 3D 几何与因果闭环根治幻觉">
+            <span class="dot dot-success"></span>
+            <strong>3D 世界模型架构</strong>（3DGS 欧氏空间 + 隐空间因果守恒）
+          </button>
+        </div>
+        <button id="btn-exp-restart" class="btn-restart" title="重新开始当前测试模拟">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <span>重新测试</span>
+        </button>
+      </div>
+
+      <!-- 实时状态与三大范式对比 -->
+      <div class="banner-grid">
+        <div class="banner-col">
+          <strong>传统 2D 视频生成 (Sora / Runway):</strong>
+          <span id="exp-stat-2d" class="text-warn">缺乏 3D 几何约束，物体被挡板遮挡后，特征在像素去噪中崩溃，移开后凭空消失！</span>
+        </div>
+        <div class="banner-col">
+          <strong>Yann LeCun H-JEPA:</strong>
+          <span id="exp-stat-lecun" class="text-gold">不预测像素噪声，在隐空间严格保持动量与因果状态向量转移，特征连续不丢失。</span>
+        </div>
+        <div class="banner-col">
+          <strong>李飞飞 World Labs Atlas:</strong>
+          <span id="exp-stat-feifei" class="text-cyan">显式 3D 高斯点云锚定欧氏物理坐标，物体即使离开视野，三维几何坐标依然永久存在。</span>
+        </div>
+      </div>
+    </aside>
+
+    <section id="scene-wrap">
+      <canvas id="scene"></canvas>
+      <div id="labels"></div>
+      <div id="loading">正在构建增强版 3D 世界模型空间架构…</div>
+      <button id="selection" class="selection" hidden title="返回全景">
+        <span id="selection-name"></span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+      </button>
+    </section>
+
+    <!-- 交互面板与流速控制 -->
+    <footer id="explore-controls" class="explore-controls">
+      <button id="play" class="icon-button" title="暂停/继续信号流动">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      </button>
+      <label class="control-group">
+        <span>时空预测步数 (动态生长)</span>
+        <input id="context-slider" type="range" min="1" max="10" value="5">
+        <output id="context-value">T = 5 步展开</output>
+      </label>
+      <label class="control-group">
+        <span>动画流速</span>
+        <select id="pace">
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1.0×</option>
+          <option value="1.8">1.8×</option>
+        </select>
+      </label>
+      <div class="legend">
+        <span class="legend-item"><span class="dot dot-lecun"></span>LeCun 潜表征流</span>
+        <span class="legend-item"><span class="dot dot-gradient"></span>梯度下山轨迹</span>
+        <span class="legend-item"><span class="dot dot-feifei"></span>Atlas 3DGS辐射</span>
+        <span class="legend-item"><span class="dot dot-flow"></span>Rectified Flow</span>
+      </div>
+    </footer>
+
+    <!-- 剧情导览面板 -->
+    <section id="story-panel" class="story-panel" hidden>
+      <div id="story-models" class="story-models">
+        <span data-story-model="0"><small>LeCun 体系</small>自主机器智能 (H-JEPA)</span>
+        <span data-story-model="1"><small>李飞飞 体系</small>World Labs 空间智能 (Atlas)</span>
+      </div>
+      <div class="story-copy">
+        <p id="story-kicker" class="story-kicker">第 1 章 · 核心哲学分野</p>
+        <h2 id="story-title">非生成式潜表征 vs 显式三维生成</h2>
+        <p id="story-caption">LeCun 坚信世界模型绝不应生成无谓的像素，而在抽象隐空间中推演因果；李飞飞团队则认为智能的核心在于三维物理空间的几何接地与高保真交互仿真。</p>
+      </div>
+      <div class="story-controls">
+        <button id="story-previous" class="icon-button" title="上一章节">
+          <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button id="story-play" class="icon-button" title="暂停导览">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+        <button id="story-next" class="icon-button" title="下一章节">
+          <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button id="story-exit" class="icon-button" title="退出导览">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <nav id="story-chapters" class="story-chapters"></nav>
+      <output id="story-time" class="story-time">0:00 / 1:15</output>
+      <div class="story-tips">
+        <span>沉浸控制：<kbd>Space</kbd> 播放/暂停 · <kbd>←</kbd> <kbd>→</kbd> 切章节 · <kbd>ESC</kbd> 退出</span>
+        <span>聚焦核心架构 · 自动隐匿次要图元</span>
+      </div>
+    </section>
+  
+    <!-- 模块运作原理深度解析浮窗 (点击自动弹出) -->
+    <aside id="component-inspector" class="component-inspector" hidden>
+      <div class="inspector-header">
+        <div class="inspector-badge-row">
+          <span id="inspector-tag" class="tag">体系</span>
+          <span id="inspector-part" class="inspector-part">核心组件</span>
+        </div>
+        <button id="close-inspector" class="icon-button" title="关闭解析窗口">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="inspector-title-wrap">
+        <h3 id="inspector-title">模块运作原理</h3>
+        <p id="inspector-sub" class="inspector-sub">英文技术定义</p>
+      </div>
+
+      <!-- 动态时序推演步骤 -->
+      <div class="inspector-section">
+        <div class="section-label">实时推演流动流水线 (Pipeline Flow)</div>
+        <div id="inspector-steps" class="step-pipeline"></div>
+      </div>
+
+      <!-- 内部运作机制 -->
+      <div class="inspector-section">
+        <div class="section-label">内部运作原理深度剖析</div>
+        <p id="inspector-desc" class="inspector-desc"></p>
+      </div>
+
+      <!-- 核心数学与物理公式 -->
+      <div class="inspector-section">
+        <div class="section-label">数学形式化定义与理论根基</div>
+        <div id="inspector-math" class="math-box"></div>
+      </div>
+
+      <!-- 架构对比与抗物理幻觉优势 -->
+      <div class="inspector-section">
+        <div class="section-label">范式本质差异与抗幻觉策略</div>
+        <div id="inspector-contrast" class="contrast-box"></div>
+      </div>
+
+      <!-- 3D 实时联动观察提示 -->
+      <div class="inspector-tip">
+        <span class="tip-dot"></span>
+        <span id="inspector-cue">观察 3D 舞台：镜头已平滑下钻至该模块内部...</span>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 理论与文献模态框 -->
+  <dialog id="source-dialog">
+    <div class="dialog-top">
+      <h2>世界模型前沿理论架构与六大维度深度对比</h2>
+      <button id="close-sources" class="icon-button">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div id="source-content" class="dialog-body"></div>
+  </dialog>
+
+  <script type="module" src="app.js?v=20260915_physics_lab"></script>
+</body>
+</html>
