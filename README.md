@@ -10,6 +10,10 @@
   <img src="https://img.shields.io/badge/Three.js-WebGL_3D-black?style=for-the-badge&logo=three.js" alt="Three.js">
 </p>
 
+<p align="center">
+  <a href="README_EN.md">English</a> | <b>简体中文</b>
+</p>
+
 > 🌟 **在线交互体验直达（GitHub Pages）**：👉 **[https://lyz-wave.github.io/world-models-survey-3d/](https://lyz-wave.github.io/world-models-survey-3d/)** 👈
 >
 > *(免配置任何本地环境，任何现代浏览器点击即可直达 3D 空间架构交互平台：体验 LeCun H-JEPA vs 李飞飞 Atlas 双架构联动、机械开箱滑轨抽取、12 大内部原理 Live 展开、60 秒导览剧情与物理对抗实验场！)*
